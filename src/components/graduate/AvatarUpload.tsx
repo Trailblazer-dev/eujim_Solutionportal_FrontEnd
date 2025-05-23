@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { User, Upload, X } from 'lucide-react';
+import { Camera, User } from 'lucide-react';
 
 interface AvatarUploadProps {
   currentImage?: string;
@@ -113,7 +113,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
             className="w-full h-full object-cover"
           />
           <div className={`absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-40 transition-opacity flex items-center justify-center ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-            <Upload size={24} className="text-white" />
+            <Camera size={24} className="text-white" />
           </div>
           
           {/* Remove button */}
@@ -134,7 +134,7 @@ const AvatarUpload: React.FC<AvatarUploadProps> = ({
           ) : (
             <User size={sizeClasses[size] === sizeClasses.large ? 48 : 24} />
           )}
-          {isHovered && <Upload size={16} className="mt-1" />}
+          {isHovered && <Camera size={16} className="mt-1" />}
         </div>
       )}
     </div>

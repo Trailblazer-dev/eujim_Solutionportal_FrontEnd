@@ -80,12 +80,19 @@ const Certificates = () => {
     setCurrentCertificate(null);
   };
   
+  // Format date for display
+  const formatDate = (dateStr: string) => {
+    if (!dateStr) return '';
+    return new Date(dateStr).toLocaleDateString();
+  };
+  
   return (
     <div className="min-h-screen bg-softgray p-6 md:p-8">
       <div className="max-w-4xl mx-auto">
         <button 
           className="mb-4 flex items-center text-navyblue hover:underline"
           onClick={() => navigate('/graduate')}
+          aria-label="Back to Dashboard"
         >
           <ArrowLeft size={18} className="mr-1" />
           Back to Dashboard
@@ -109,8 +116,9 @@ const Certificates = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Certificate Name</label>
+                <label htmlFor="certName" className="block text-sm font-medium text-gray-700 mb-1">Certificate Name</label>
                 <input
+                  id="certName"
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded"
                   value={currentCertificate?.name || ''}
@@ -123,8 +131,9 @@ const Certificates = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Issuing Organization</label>
+                <label htmlFor="certIssuer" className="block text-sm font-medium text-gray-700 mb-1">Issuing Organization</label>
                 <input
+                  id="certIssuer"
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded"
                   value={currentCertificate?.issuer || ''}
@@ -138,8 +147,9 @@ const Certificates = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Issue Date</label>
+                  <label htmlFor="certIssueDate" className="block text-sm font-medium text-gray-700 mb-1">Issue Date</label>
                   <input
+                    id="certIssueDate"
                     type="date"
                     className="w-full p-2 border border-gray-300 rounded"
                     value={currentCertificate?.issueDate || ''}
@@ -147,12 +157,15 @@ const Certificates = () => {
                       ...currentCertificate!,
                       issueDate: e.target.value
                     })}
+                    aria-label="Certificate issue date"
+                    title="Date when the certificate was issued"
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (Optional)</label>
+                  <label htmlFor="certExpiryDate" className="block text-sm font-medium text-gray-700 mb-1">Expiry Date (Optional)</label>
                   <input
+                    id="certExpiryDate"
                     type="date"
                     className="w-full p-2 border border-gray-300 rounded"
                     value={currentCertificate?.expiryDate || ''}
@@ -160,13 +173,16 @@ const Certificates = () => {
                       ...currentCertificate!,
                       expiryDate: e.target.value || undefined
                     })}
+                    aria-label="Certificate expiry date"
+                    title="Date when the certificate expires (if applicable)"
                   />
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Credential ID (Optional)</label>
+                <label htmlFor="certCredentialId" className="block text-sm font-medium text-gray-700 mb-1">Credential ID (Optional)</label>
                 <input
+                  id="certCredentialId"
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded"
                   value={currentCertificate?.credentialId || ''}
@@ -179,8 +195,9 @@ const Certificates = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Credential URL (Optional)</label>
+                <label htmlFor="certCredentialUrl" className="block text-sm font-medium text-gray-700 mb-1">Credential URL (Optional)</label>
                 <input
+                  id="certCredentialUrl"
                   type="url"
                   className="w-full p-2 border border-gray-300 rounded"
                   value={currentCertificate?.credentialUrl || ''}
@@ -193,8 +210,9 @@ const Certificates = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
+                <label htmlFor="certDescription" className="block text-sm font-medium text-gray-700 mb-1">Description (Optional)</label>
                 <textarea
+                  id="certDescription"
                   className="w-full p-2 border border-gray-300 rounded"
                   rows={3}
                   value={currentCertificate?.description || ''}
@@ -237,12 +255,16 @@ const Certificates = () => {
                     <button 
                       onClick={() => handleEditCertificate(certificate)}
                       className="p-1 text-gray-500 hover:text-navyblue"
+                      aria-label={`Edit ${certificate.name}`}
+                      title="Edit certificate"
                     >
                       <Pencil size={16} />
                     </button>
                     <button 
                       onClick={() => handleDeleteCertificate(certificate.id)}
                       className="p-1 text-gray-500 hover:text-red-500"
+                      aria-label={`Delete ${certificate.name}`}
+                      title="Delete certificate"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -251,8 +273,8 @@ const Certificates = () => {
                   <h3 className="text-lg font-bold text-navyblue">{certificate.name}</h3>
                   <p className="text-gray-700">{certificate.issuer}</p>
                   <p className="text-sm text-gray-500">
-                    Issued: {new Date(certificate.issueDate).toLocaleDateString()}
-                    {certificate.expiryDate && ` · Expires: ${new Date(certificate.expiryDate).toLocaleDateString()}`}
+                    Issued: {formatDate(certificate.issueDate)}
+                    {certificate.expiryDate && ` · Expires: ${formatDate(certificate.expiryDate)}`}
                   </p>
                   
                   {certificate.credentialId && (
@@ -265,6 +287,7 @@ const Certificates = () => {
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-sm text-lightblue flex items-center mt-1 hover:underline"
+                      aria-label={`Verify ${certificate.name} certificate`}
                     >
                       Verify Certificate
                       <ExternalLink size={14} className="ml-1" />

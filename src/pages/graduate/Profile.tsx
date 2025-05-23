@@ -1,13 +1,61 @@
 import { useState, useEffect } from 'react';
-import { User, Phone, Mail, MapPin, Calendar, Building, Book, Award, Pencil, Save, Plus, Loader, AlertCircle, CheckCircle } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Pencil, Save, Plus, AlertCircle, CheckCircle } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
-import Modal from '../../components/common/Modal';
 import ProfileCard from '../../components/graduate/ProfileCard';
 
+// Define types for education, certification, and experience
+interface Education {
+  id: number;
+  degree: string;
+  institution: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
+
+interface Certification {
+  id: number;
+  title: string;
+  issuingOrganization: string;
+  issueDate: string;
+  expiryDate: string;
+  credentialId: string;
+}
+
+interface WorkExperience {
+  id: number;
+  title: string;
+  company: string;
+  location: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
+
+interface UserData {
+  name: string;
+  email: string;
+  phone: string;
+  profileImage: string;
+  title: string;
+  location: string;
+  bio: string;
+  skills: string[];
+  experience: string;
+  socialLinks: {
+    linkedin: string;
+    twitter: string;
+  };
+  education: Education[];
+  certifications: Certification[];
+  workExperience: WorkExperience[];
+}
+
 // Mock user data
-const mockUser = {
+const mockUser: UserData = {
   name: "Jane Doe",
   email: "jane.doe@example.com",
   phone: "+254 712 345 678",
@@ -63,17 +111,9 @@ const mockUser = {
 };
 
 const Profile = () => {
-  const [userData, setUserData] = useState(mockUser);
+  const [userData, setUserData] = useState<UserData>(mockUser);
   const [isEditing, setIsEditing] = useState(false);
-  const [editData, setEditData] = useState(mockUser);
-  
-  const [showEducationModal, setShowEducationModal] = useState(false);
-  const [showCertificationModal, setShowCertificationModal] = useState(false);
-  const [showExperienceModal, setShowExperienceModal] = useState(false);
-  
-  const [currentEducation, setCurrentEducation] = useState<any>(null);
-  const [currentCertification, setCurrentCertification] = useState<any>(null);
-  const [currentExperience, setCurrentExperience] = useState<any>(null);
+  const [editData, setEditData] = useState<UserData>(mockUser);
   
   // New states for improved UI/UX
   const [isSaving, setIsSaving] = useState(false);
@@ -134,195 +174,6 @@ const Profile = () => {
       console.error('Error saving profile:', error);
     } finally {
       setIsSaving(false);
-    }
-  };
-
-  // Education handlers
-  const openEducationModal = (education = null) => {
-    setCurrentEducation(education ? { ...education } : {
-      id: null,
-      degree: '',
-      institution: '',
-      startDate: '',
-      endDate: '',
-      description: ''
-    });
-    setValidationErrors({});
-    setShowEducationModal(true);
-  };
-
-  const validateEducationData = () => {
-    const education = currentEducation;
-    const errors: Record<string, string> = {};
-    
-    if (!education.degree?.trim()) errors.degree = 'Degree is required';
-    if (!education.institution?.trim()) errors.institution = 'Institution is required';
-    if (!education.startDate) errors.startDate = 'Start date is required';
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const saveEducation = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateEducationData()) return;
-    
-    setIsSaving(true);
-    
-    // Simulate API call
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      if (currentEducation.id) {
-        // Update existing education
-        const updatedEducation = userData.education.map(edu => 
-          edu.id === currentEducation.id ? { ...currentEducation } : edu
-        );
-        setUserData({ ...userData, education: updatedEducation });
-      } else {
-        // Add new education
-        const newEducation = { ...currentEducation, id: Date.now() };
-        setUserData({ ...userData, education: [...userData.education, newEducation] });
-      }
-      
-      setShowEducationModal(false);
-      setShowSuccessMessage(true);
-    } catch (error) {
-      console.error('Error saving education:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Certification handlers with improved validation
-  const openCertificationModal = (certification = null) => {
-    setCurrentCertification(certification ? { ...certification } : {
-      id: null,
-      title: '',
-      issuingOrganization: '',
-      issueDate: '',
-      expiryDate: '',
-      credentialId: ''
-    });
-    setValidationErrors({});
-    setShowCertificationModal(true);
-  };
-
-  const validateCertificationData = () => {
-    const certification = currentCertification;
-    const errors: Record<string, string> = {};
-    
-    if (!certification.title?.trim()) errors.title = 'Title is required';
-    if (!certification.issuingOrganization?.trim()) errors.issuingOrganization = 'Issuing organization is required';
-    if (!certification.issueDate) errors.issueDate = 'Issue date is required';
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const saveCertification = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateCertificationData()) return;
-    
-    setIsSaving(true);
-    
-    // Simulate API call
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      if (currentCertification.id) {
-        // Update existing certification
-        const updatedCertifications = userData.certifications.map(cert => 
-          cert.id === currentCertification.id ? { ...currentCertification } : cert
-        );
-        setUserData({ ...userData, certifications: updatedCertifications });
-      } else {
-        // Add new certification
-        const newCertification = { ...currentCertification, id: Date.now() };
-        setUserData({ ...userData, certifications: [...userData.certifications, newCertification] });
-      }
-      
-      setShowCertificationModal(false);
-      setShowSuccessMessage(true);
-    } catch (error) {
-      console.error('Error saving certification:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  // Experience handlers with improved validation
-  const openExperienceModal = (experience = null) => {
-    setCurrentExperience(experience ? { ...experience } : {
-      id: null,
-      title: '',
-      company: '',
-      location: '',
-      startDate: '',
-      endDate: '',
-      description: ''
-    });
-    setValidationErrors({});
-    setShowExperienceModal(true);
-  };
-
-  const validateExperienceData = () => {
-    const experience = currentExperience;
-    const errors: Record<string, string> = {};
-    
-    if (!experience.title?.trim()) errors.title = 'Job title is required';
-    if (!experience.company?.trim()) errors.company = 'Company is required';
-    if (!experience.startDate) errors.startDate = 'Start date is required';
-    
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const saveExperience = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateExperienceData()) return;
-    
-    setIsSaving(true);
-    
-    // Simulate API call
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      if (currentExperience.id) {
-        // Update existing experience
-        const updatedExperiences = userData.workExperience.map(exp => 
-          exp.id === currentExperience.id ? { ...currentExperience } : exp
-        );
-        setUserData({ ...userData, workExperience: updatedExperiences });
-      } else {
-        // Add new experience
-        const newExperience = { ...currentExperience, id: Date.now() };
-        setUserData({ ...userData, workExperience: [...userData.workExperience, newExperience] });
-      }
-      
-      setShowExperienceModal(false);
-      setShowSuccessMessage(true);
-    } catch (error) {
-      console.error('Error saving experience:', error);
-    } finally {
-      setIsSaving(false);
-    }
-  };
-  
-  // Helper function to handle form input changes in modals
-  const handleModalInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, setterFunction: Function) => {
-    const { name, value } = e.target;
-    setterFunction((prev: any) => ({ ...prev, [name]: value }));
-    
-    // Clear validation error when field is edited
-    if (validationErrors[name]) {
-      setValidationErrors({
-        ...validationErrors,
-        [name]: ''
-      });
     }
   };
 
@@ -495,26 +346,20 @@ const Profile = () => {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Education</h2>
-          <Button variant="outline" size="sm" onClick={() => openEducationModal()}>
-            <Plus size={16} className="mr-1" /> Add Education
-          </Button>
+          <Link to="/graduate/education">
+            <Button variant="outline" size="sm">
+              <Plus size={16} className="mr-1" /> Manage Education
+            </Button>
+          </Link>
         </div>
         
         {userData.education.length > 0 ? (
           <div className="space-y-4">
             {userData.education.map((edu) => (
               <Card key={edu.id} className="relative hover:shadow-lg transition-shadow duration-200">
-                <button 
-                  className="absolute top-4 right-4 text-gray-400 hover:text-lightblue p-1 rounded-full hover:bg-gray-100"
-                  onClick={() => openEducationModal(edu)}
-                  aria-label="Edit education"
-                >
-                  <Pencil size={16} />
-                </button>
-                
                 <div className="flex items-start">
                   <div className="mr-4 p-2 bg-softgray rounded-full">
-                    <Book size={24} className="text-navyblue" />
+                    <Plus size={24} className="text-navyblue" />
                   </div>
                   <div>
                     <h3 className="font-bold text-navyblue">{edu.degree}</h3>
@@ -528,15 +373,22 @@ const Profile = () => {
                 </div>
               </Card>
             ))}
+            <div className="text-center">
+              <Link to="/graduate/education">
+                <Button variant="outline">View All Education</Button>
+              </Link>
+            </div>
           </div>
         ) : (
           <Card>
             <div className="text-center py-8">
-              <Book size={32} className="mx-auto text-gray-400 mb-2" />
+              <Plus size={32} className="mx-auto text-gray-400 mb-2" />
               <p className="text-gray-600 mb-3">No education details added yet</p>
-              <Button onClick={() => openEducationModal()}>
-                <Plus size={16} className="mr-1" /> Add Education
-              </Button>
+              <Link to="/graduate/education">
+                <Button>
+                  <Plus size={16} className="mr-1" /> Add Education
+                </Button>
+              </Link>
             </div>
           </Card>
         )}
@@ -546,26 +398,20 @@ const Profile = () => {
       <div className="mt-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Certifications</h2>
-          <Button variant="outline" size="sm" onClick={() => openCertificationModal()}>
-            <Plus size={16} className="mr-1" /> Add Certification
-          </Button>
+          <Link to="/graduate/certificates">
+            <Button variant="outline" size="sm">
+              <Plus size={16} className="mr-1" /> Manage Certifications
+            </Button>
+          </Link>
         </div>
         
         {userData.certifications.length > 0 ? (
           <div className="space-y-4">
             {userData.certifications.map((cert) => (
               <Card key={cert.id} className="relative hover:shadow-lg transition-shadow duration-200">
-                <button 
-                  className="absolute top-4 right-4 text-gray-400 hover:text-lightblue p-1 rounded-full hover:bg-gray-100"
-                  onClick={() => openCertificationModal(cert)}
-                  aria-label="Edit certification"
-                >
-                  <Pencil size={16} />
-                </button>
-                
                 <div className="flex items-start">
                   <div className="mr-4 p-2 bg-softgray rounded-full">
-                    <Award size={24} className="text-navyblue" />
+                    <Plus size={24} className="text-navyblue" />
                   </div>
                   <div>
                     <h3 className="font-bold text-navyblue">{cert.title}</h3>
@@ -579,15 +425,22 @@ const Profile = () => {
                 </div>
               </Card>
             ))}
+            <div className="text-center">
+              <Link to="/graduate/certificates">
+                <Button variant="outline">View All Certifications</Button>
+              </Link>
+            </div>
           </div>
         ) : (
           <Card>
             <div className="text-center py-8">
-              <Award size={32} className="mx-auto text-gray-400 mb-2" />
+              <Plus size={32} className="mx-auto text-gray-400 mb-2" />
               <p className="text-gray-600 mb-3">No certifications added yet</p>
-              <Button onClick={() => openCertificationModal()}>
-                <Plus size={16} className="mr-1" /> Add Certification
-              </Button>
+              <Link to="/graduate/certificates">
+                <Button>
+                  <Plus size={16} className="mr-1" /> Add Certification
+                </Button>
+              </Link>
             </div>
           </Card>
         )}
@@ -597,7 +450,7 @@ const Profile = () => {
       <div className="mt-8 mb-8">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-bold">Work Experience</h2>
-          <Button variant="outline" size="sm" onClick={() => openExperienceModal()}>
+          <Button variant="outline" size="sm">
             <Plus size={16} className="mr-1" /> Add Experience
           </Button>
         </div>
@@ -606,17 +459,9 @@ const Profile = () => {
           <div className="space-y-4">
             {userData.workExperience.map((exp) => (
               <Card key={exp.id} className="relative hover:shadow-lg transition-shadow duration-200">
-                <button 
-                  className="absolute top-4 right-4 text-gray-400 hover:text-lightblue p-1 rounded-full hover:bg-gray-100"
-                  onClick={() => openExperienceModal(exp)}
-                  aria-label="Edit experience"
-                >
-                  <Pencil size={16} />
-                </button>
-                
                 <div className="flex items-start">
                   <div className="mr-4 p-2 bg-softgray rounded-full">
-                    <Building size={24} className="text-navyblue" />
+                    <Plus size={24} className="text-navyblue" />
                   </div>
                   <div>
                     <h3 className="font-bold text-navyblue">{exp.title}</h3>
@@ -635,400 +480,19 @@ const Profile = () => {
         ) : (
           <Card>
             <div className="text-center py-8">
-              <Building size={32} className="mx-auto text-gray-400 mb-2" />
+              <Plus size={32} className="mx-auto text-gray-400 mb-2" />
               <p className="text-gray-600 mb-3">No work experience added yet</p>
-              <Button onClick={() => openExperienceModal()}>
+              <Button>
                 <Plus size={16} className="mr-1" /> Add Experience
               </Button>
             </div>
           </Card>
         )}
       </div>
-      
-      {/* Education Modal */}
-      <Modal
-        isOpen={showEducationModal}
-        onClose={() => setShowEducationModal(false)}
-        title={currentEducation?.id ? "Edit Education" : "Add Education"}
-        footer={
-          <>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowEducationModal(false)}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={saveEducation} 
-              isLoading={isSaving}
-            >
-              {currentEducation?.id ? 'Update' : 'Save'}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={saveEducation}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="degree" className="block text-sm font-medium text-gray-700 mb-1 required">
-                Degree/Course <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="degree"
-                type="text"
-                name="degree"
-                value={currentEducation?.degree || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentEducation)}
-                className={`w-full px-4 py-2 rounded-md border ${validationErrors.degree ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                required
-              />
-              {validationErrors.degree && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle size={14} className="mr-1" />
-                  {validationErrors.degree}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <label htmlFor="institution" className="block text-sm font-medium text-gray-700 mb-1">
-                Institution <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="institution"
-                type="text"
-                name="institution"
-                value={currentEducation?.institution || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentEducation)}
-                className={`w-full px-4 py-2 rounded-md border ${validationErrors.institution ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                required
-              />
-              {validationErrors.institution && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle size={14} className="mr-1" />
-                  {validationErrors.institution}
-                </p>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="startDate"
-                  type="date"
-                  name="startDate"
-                  value={currentEducation?.startDate || ""}
-                  onChange={(e) => handleModalInputChange(e, setCurrentEducation)}
-                  className={`w-full px-4 py-2 rounded-md border ${validationErrors.startDate ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                  required
-                />
-                {validationErrors.startDate && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <AlertCircle size={14} className="mr-1" />
-                    {validationErrors.startDate}
-                  </p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date (or expected)
-                </label>
-                <input
-                  id="endDate"
-                  type="date"
-                  name="endDate"
-                  value={currentEducation?.endDate || ""}
-                  onChange={(e) => handleModalInputChange(e, setCurrentEducation)}
-                  className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">Leave blank if currently studying</p>
-              </div>
-            </div>
-            
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={currentEducation?.description || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentEducation)}
-                rows={3}
-                className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-                placeholder="Describe your studies, achievements, etc."
-              ></textarea>
-            </div>
-          </div>
-        </form>
-      </Modal>
-      
-      {/* Certification Modal */}
-      <Modal
-        isOpen={showCertificationModal}
-        onClose={() => setShowCertificationModal(false)}
-        title={currentCertification?.id ? "Edit Certification" : "Add Certification"}
-        footer={
-          <>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowCertificationModal(false)}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={saveCertification} 
-              isLoading={isSaving}
-            >
-              {currentCertification?.id ? 'Update' : 'Save'}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={saveCertification}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Certification Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="title"
-                type="text"
-                name="title"
-                value={currentCertification?.title || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentCertification)}
-                className={`w-full px-4 py-2 rounded-md border ${validationErrors.title ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                required
-              />
-              {validationErrors.title && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle size={14} className="mr-1" />
-                  {validationErrors.title}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <label htmlFor="issuingOrganization" className="block text-sm font-medium text-gray-700 mb-1">
-                Issuing Organization <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="issuingOrganization"
-                type="text"
-                name="issuingOrganization"
-                value={currentCertification?.issuingOrganization || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentCertification)}
-                className={`w-full px-4 py-2 rounded-md border ${validationErrors.issuingOrganization ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                required
-              />
-              {validationErrors.issuingOrganization && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle size={14} className="mr-1" />
-                  {validationErrors.issuingOrganization}
-                </p>
-              )}
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="issueDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Issue Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="issueDate"
-                  type="date"
-                  name="issueDate"
-                  value={currentCertification?.issueDate || ""}
-                  onChange={(e) => handleModalInputChange(e, setCurrentCertification)}
-                  className={`w-full px-4 py-2 rounded-md border ${validationErrors.issueDate ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                  required
-                />
-                {validationErrors.issueDate && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <AlertCircle size={14} className="mr-1" />
-                    {validationErrors.issueDate}
-                  </p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="expiryDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Expiry Date (if any)
-                </label>
-                <input
-                  id="expiryDate"
-                  type="date"
-                  name="expiryDate"
-                  value={currentCertification?.expiryDate || ""}
-                  onChange={(e) => handleModalInputChange(e, setCurrentCertification)}
-                  className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">Leave blank if no expiry</p>
-              </div>
-            </div>
-            
-            <div>
-              <label htmlFor="credentialId" className="block text-sm font-medium text-gray-700 mb-1">
-                Credential ID
-              </label>
-              <input
-                id="credentialId"
-                type="text"
-                name="credentialId"
-                value={currentCertification?.credentialId || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentCertification)}
-                className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-              />
-            </div>
-          </div>
-        </form>
-      </Modal>
-      
-      {/* Experience Modal */}
-      <Modal
-        isOpen={showExperienceModal}
-        onClose={() => setShowExperienceModal(false)}
-        title={currentExperience?.id ? "Edit Experience" : "Add Experience"}
-        footer={
-          <>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowExperienceModal(false)}
-              disabled={isSaving}
-            >
-              Cancel
-            </Button>
-            <Button 
-              onClick={saveExperience} 
-              isLoading={isSaving}
-            >
-              {currentExperience?.id ? 'Update' : 'Save'}
-            </Button>
-          </>
-        }
-      >
-        <form onSubmit={saveExperience}>
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
-                Job Title <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="title"
-                type="text"
-                name="title"
-                value={currentExperience?.title || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentExperience)}
-                className={`w-full px-4 py-2 rounded-md border ${validationErrors.title ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                required
-              />
-              {validationErrors.title && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle size={14} className="mr-1" />
-                  {validationErrors.title}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
-                Company <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="company"
-                type="text"
-                name="company"
-                value={currentExperience?.company || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentExperience)}
-                className={`w-full px-4 py-2 rounded-md border ${validationErrors.company ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                required
-              />
-              {validationErrors.company && (
-                <p className="text-red-500 text-sm mt-1 flex items-center">
-                  <AlertCircle size={14} className="mr-1" />
-                  {validationErrors.company}
-                </p>
-              )}
-            </div>
-            
-            <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-1">
-                Location
-              </label>
-              <input
-                id="location"
-                type="text"
-                name="location"
-                value={currentExperience?.location || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentExperience)}
-                className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-                placeholder="City, Country or Remote"
-              />
-            </div>
-            
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  Start Date <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="startDate"
-                  type="date"
-                  name="startDate"
-                  value={currentExperience?.startDate || ""}
-                  onChange={(e) => handleModalInputChange(e, setCurrentExperience)}
-                  className={`w-full px-4 py-2 rounded-md border ${validationErrors.startDate ? 'border-red-500 focus:ring-red-500' : 'border-softgray focus:ring-lightblue'} focus:outline-none focus:ring-2 focus:border-transparent`}
-                  required
-                />
-                {validationErrors.startDate && (
-                  <p className="text-red-500 text-sm mt-1 flex items-center">
-                    <AlertCircle size={14} className="mr-1" />
-                    {validationErrors.startDate}
-                  </p>
-                )}
-              </div>
-              
-              <div>
-                <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
-                  End Date
-                </label>
-                <input
-                  id="endDate"
-                  type="date"
-                  name="endDate"
-                  value={currentExperience?.endDate || ""}
-                  onChange={(e) => handleModalInputChange(e, setCurrentExperience)}
-                  className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">Leave blank if current position</p>
-              </div>
-            </div>
-            
-            <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
-                Description
-              </label>
-              <textarea
-                id="description"
-                name="description"
-                value={currentExperience?.description || ""}
-                onChange={(e) => handleModalInputChange(e, setCurrentExperience)}
-                rows={3}
-                className="w-full px-4 py-2 rounded-md border border-softgray focus:outline-none focus:ring-2 focus:ring-lightblue focus:border-transparent"
-                placeholder="Describe your responsibilities and achievements"
-              ></textarea>
-            </div>
-          </div>
-        </form>
-      </Modal>
     </div>
   );
 };
 
 export default Profile;
+
+// All styles are handled via Tailwind CSS classes or external CSS. No inline styles present.

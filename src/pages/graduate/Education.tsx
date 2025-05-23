@@ -33,7 +33,6 @@ const Education = () => {
       description: 'Focused on mathematics and computer studies.'
     }
   ]);
-
   const [isAddingEducation, setIsAddingEducation] = useState(false);
   const [currentEducation, setCurrentEducation] = useState<Education | null>(null);
   
@@ -77,12 +76,21 @@ const Education = () => {
     setCurrentEducation(null);
   };
   
+  // Helper function to format date to display in a browser-compatible way
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const [year, month] = dateString.split('-');
+    const date = new Date(Number(year), Number(month) - 1);
+    return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+  };
+  
   return (
     <div className="min-h-screen bg-softgray p-6 md:p-8">
       <div className="max-w-4xl mx-auto">
         <button 
           className="mb-4 flex items-center text-navyblue hover:underline"
           onClick={() => navigate('/graduate')}
+          aria-label="Back to Dashboard"
         >
           <ArrowLeft size={18} className="mr-1" />
           Back to Dashboard
@@ -106,8 +114,9 @@ const Education = () => {
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Degree/Certificate</label>
+                <label htmlFor="degree" className="block text-sm font-medium text-gray-700 mb-1">Degree/Certificate</label>
                 <input
+                  id="degree"
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded"
                   value={currentEducation?.degree || ''}
@@ -120,8 +129,9 @@ const Education = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Institution</label>
+                <label htmlFor="institution" className="block text-sm font-medium text-gray-700 mb-1">Institution</label>
                 <input
+                  id="institution"
                   type="text"
                   className="w-full p-2 border border-gray-300 rounded"
                   value={currentEducation?.institution || ''}
@@ -135,35 +145,92 @@ const Education = () => {
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                  <input
-                    type="month"
-                    className="w-full p-2 border border-gray-300 rounded"
-                    value={currentEducation?.startDate || ''}
-                    onChange={(e) => setCurrentEducation({
-                      ...currentEducation!,
-                      startDate: e.target.value
-                    })}
-                  />
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                  <div className="flex gap-2">
+                    {/* Replace input[type=month] with two selects for year and month for better browser compatibility */}
+                    <select
+                      id="startMonth"
+                      className="flex-1 p-2 border border-gray-300 rounded"
+                      value={currentEducation?.startDate.split('-')[1] || ''}
+                      onChange={(e) => setCurrentEducation({
+                        ...currentEducation!,
+                        startDate: `${currentEducation!.startDate.split('-')[0]}-${e.target.value}`
+                      })}
+                      aria-label="Education start month"
+                    >
+                      <option value="">Month</option>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i} value={String(i + 1).padStart(2, '0')}>
+                          {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      id="startYear"
+                      className="flex-1 p-2 border border-gray-300 rounded"
+                      value={currentEducation?.startDate.split('-')[0] || ''}
+                      onChange={(e) => setCurrentEducation({
+                        ...currentEducation!,
+                        startDate: `${e.target.value}-${currentEducation!.startDate.split('-')[1]}`
+                      })}
+                      aria-label="Education start year"
+                    >
+                      <option value="">Year</option>
+                      {Array.from({ length: 50 }, (_, i) => (
+                        <option key={i} value={String(2023 - i)}>
+                          {2023 - i}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                  <input
-                    type="month"
-                    className="w-full p-2 border border-gray-300 rounded"
-                    value={currentEducation?.endDate || ''}
-                    onChange={(e) => setCurrentEducation({
-                      ...currentEducation!,
-                      endDate: e.target.value
-                    })}
-                  />
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                  <div className="flex gap-2">
+                    {/* Replace input[type=month] with two selects for year and month for better browser compatibility */}
+                    <select
+                      id="endMonth"
+                      className="flex-1 p-2 border border-gray-300 rounded"
+                      value={currentEducation?.endDate.split('-')[1] || ''}
+                      onChange={(e) => setCurrentEducation({
+                        ...currentEducation!,
+                        endDate: `${currentEducation!.endDate.split('-')[0]}-${e.target.value}`
+                      })}
+                      aria-label="Education end month"
+                    >
+                      <option value="">Month</option>
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <option key={i} value={String(i + 1).padStart(2, '0')}>
+                          {new Date(0, i).toLocaleString('default', { month: 'long' })}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      id="endYear"
+                      className="flex-1 p-2 border border-gray-300 rounded"
+                      value={currentEducation?.endDate.split('-')[0] || ''}
+                      onChange={(e) => setCurrentEducation({
+                        ...currentEducation!,
+                        endDate: `${e.target.value}-${currentEducation!.endDate.split('-')[1]}`
+                      })}
+                      aria-label="Education end year"
+                    >
+                      <option value="">Year</option>
+                      {Array.from({ length: 50 }, (_, i) => (
+                        <option key={i} value={String(2023 - i)}>
+                          {2023 - i}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                 <textarea
+                  id="description"
                   className="w-full p-2 border border-gray-300 rounded"
                   rows={3}
                   value={currentEducation?.description || ''}
@@ -206,12 +273,16 @@ const Education = () => {
                     <button 
                       onClick={() => handleEditEducation(education)}
                       className="p-1 text-gray-500 hover:text-navyblue"
+                      aria-label={`Edit ${education.degree}`}
+                      title="Edit education"
                     >
                       <Pencil size={16} />
                     </button>
                     <button 
                       onClick={() => handleDeleteEducation(education.id)}
                       className="p-1 text-gray-500 hover:text-red-500"
+                      aria-label={`Delete ${education.degree}`}
+                      title="Delete education"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -220,8 +291,7 @@ const Education = () => {
                   <h3 className="text-lg font-bold text-navyblue">{education.degree}</h3>
                   <p className="text-gray-700">{education.institution}</p>
                   <p className="text-sm text-gray-500">
-                    {new Date(education.startDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })} - 
-                    {new Date(education.endDate).toLocaleDateString('en-US', { year: 'numeric', month: 'long' })}
+                    {formatDate(education.startDate)} - {formatDate(education.endDate)}
                   </p>
                   
                   {education.description && (

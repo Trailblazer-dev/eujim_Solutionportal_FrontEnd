@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Phone, Mail, MapPin, Calendar, Building, Pencil, ExternalLink, Linkedin, Twitter } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Calendar, Pencil, Linkedin, Twitter } from 'lucide-react';
 import Button from '../common/Button';
 import AvatarUpload from './AvatarUpload';
 
@@ -119,38 +119,38 @@ const ProfileCard: React.FC<ProfileCardProps> = ({
                   <span>{experience} experience</span>
                 </li>
               )}
-              
-              {/* Social links */}
-              {socialLinks && (Object.values(socialLinks).some(link => link)) && (
-                <div className="pt-2">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Social Profiles</h4>
-                  <div className="flex space-x-2">
-                    {socialLinks.linkedin && (
-                      <a
-                        href={socialLinks.linkedin}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 bg-white rounded-full text-lightblue hover:bg-lightblue hover:text-white transition-colors duration-200"
-                        aria-label="LinkedIn Profile"
-                      >
-                        <Linkedin size={18} />
-                      </a>
-                    )}
-                    {socialLinks.twitter && (
-                      <a
-                        href={socialLinks.twitter}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="p-2 bg-white rounded-full text-lightblue hover:bg-lightblue hover:text-white transition-colors duration-200"
-                        aria-label="Twitter Profile"
-                      >
-                        <Twitter size={18} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-              )}
             </ul>
+              
+            {/* Social links */}
+            {socialLinks && (Object.values(socialLinks).some(link => link)) && (
+              <div className="pt-2 mt-3">
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Social Profiles</h4>
+                <div className="flex space-x-2">
+                  {socialLinks.linkedin && (
+                    <a
+                      href={socialLinks.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-white rounded-full text-lightblue hover:bg-lightblue hover:text-white transition-colors duration-200"
+                      aria-label="LinkedIn Profile"
+                    >
+                      <Linkedin size={18} />
+                    </a>
+                  )}
+                  {socialLinks.twitter && (
+                    <a
+                      href={socialLinks.twitter}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="p-2 bg-white rounded-full text-lightblue hover:bg-lightblue hover:text-white transition-colors duration-200"
+                      aria-label="Twitter Profile"
+                    >
+                      <Twitter size={18} />
+                    </a>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
