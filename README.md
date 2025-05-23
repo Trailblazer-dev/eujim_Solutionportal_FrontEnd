@@ -1,54 +1,85 @@
-# React + TypeScript + Vite
+# Eujim Graduate Engagement Platform Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern, responsive, and accessible web application for the Eujim Graduate Engagement Platform, built with React, TypeScript, Vite, Tailwind CSS v4, and Lucide Icons. This platform connects graduates, employers, and administrators, providing dashboards, job search, profile management, and more.
 
-Currently, two official plugins are available:
+## Features
+- **Role-based Dashboards:** Separate layouts and navigation for graduates, employers, and admins.
+- **Responsive & Accessible UI:** Built with Tailwind CSS v4 and a unified design system for a seamless experience on all devices.
+- **Modern Tooling:** Uses Vite for fast development, TypeScript for type safety, and ESLint for code quality.
+- **Component Library:** Reusable components (Card, Button, Header, etc.) for consistent UI/UX.
+- **Mock Data & Placeholders:** Easily extendable with real backend integration.
+- **Admin Tools:** Manage employers, graduates, analytics, and settings (with extensible placeholders).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Getting Started
 
-## Expanding the ESLint configuration
+### Prerequisites
+- Node.js (v18+ recommended)
+- npm or yarn
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+### Installation
+```bash
+npm install
+# or
+yarn install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+### Development
+```bash
+npm run dev
+# or
+yarn dev
 ```
+Visit [http://localhost:5173](http://localhost:5173) to view the app.
+
+### Build for Production
+```bash
+npm run build
+# or
+yarn build
+```
+
+### Linting
+```bash
+npm run lint
+# or
+yarn lint
+```
+
+## Project Structure
+```
+src/
+  components/      # Reusable UI components
+  layouts/         # Role-based layout wrappers
+  pages/           # Page components (admin, employer, graduate, auth, common)
+  routes/          # Routing logic
+  services/        # API service modules
+  types/           # TypeScript type definitions
+  utils/           # Utility functions
+  context/         # React context providers
+  hooks/           # Custom React hooks
+  index.css        # Tailwind and global styles
+```
+
+## Design System
+- **Colors:** Defined in `index.css` using Tailwind and custom CSS variables.
+- **Typography & Spacing:** Consistent via Tailwind utility classes.
+- **Icons:** [Lucide Icons](https://lucide.dev/icons/) for a modern look.
+
+## ESLint & Code Quality
+- ESLint is configured for React, TypeScript, and React Hooks best practices.
+- See `eslint.config.js` for details and recommended extensions.
+
+## Customization & Extensibility
+- Placeholder pages and mock data are provided for rapid prototyping.
+- Easily connect to real APIs by updating service modules in `src/services/`.
+- Extend the design system by adding new components to `src/components/common/`.
+
+## Contributing
+Pull requests and issues are welcome! Please follow the existing code style and conventions.
+
+## License
+This project is for educational and demonstration purposes. Contact the project owner for licensing details.
+
+---
+
+**Eujim Graduate Engagement Platform** — Empowering graduates, connecting employers, enabling success.
