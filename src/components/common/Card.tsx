@@ -1,15 +1,29 @@
-import { ReactNode } from 'react';
+import React from 'react';
 
-type CardProps = {
-  title?: string;
-  children: ReactNode;
+interface CardProps {
+  children: React.ReactNode;
   className?: string;
-};
+  noPadding?: boolean;
+  onClick?: () => void;
+}
 
-const Card = ({ title, children, className = '' }: CardProps) => {
+const Card: React.FC<CardProps> = ({ 
+  children, 
+  className = '',
+  noPadding = false,
+  onClick
+}) => {
+  const baseClasses = "bg-white rounded-lg shadow-sm border border-gray-100";
+  const paddingClasses = noPadding ? "" : "p-6";
+  const cursorClasses = onClick ? "cursor-pointer hover:shadow-md transition-shadow duration-200" : "";
+  
   return (
-    <div className={`bg-white rounded-lg shadow-md p-6 ${className}`}>
-      {title && <h2 className="text-xl font-bold mb-4">{title}</h2>}
+    <div 
+      className={`${baseClasses} ${paddingClasses} ${cursorClasses} ${className}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+    >
       {children}
     </div>
   );

@@ -1,14 +1,9 @@
 @import "tailwindcss";
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer base {
-  :root {
+@theme{
     --color-navyblue: #0A192F;
     --color-white: #FFFFFF;
     --color-softgray: #F5F7FA;
     --color-lightblue: #3B82F6;
-  }
+  
 }
