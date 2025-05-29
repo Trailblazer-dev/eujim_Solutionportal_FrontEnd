@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Mail, Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, CheckCircle, AlertCircle, Home } from 'lucide-react';
 import Card from '../../components/common/Card';
 import Button from '../../components/common/Button';
 import Input from '../../components/common/Input';
+import useAuth from '../../hooks/useAuth';
 
 type UserType = 'graduate' | 'employer' | 'admin';
 
 const Login = () => {
-  const navigate = useNavigate();
+  const { login, loading: authLoading, error: authError } = useAuth();
   const location = useLocation();
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const [userType, setUserType] = useState<UserType>('graduate');
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -36,6 +36,13 @@ const Login = () => {
       return () => clearTimeout(timer);
     }
   }, [location.state]);
+
+  // Update error message when authError changes
+  useEffect(() => {
+    if (authError) {
+      setErrorMessage(authError);
+    }
+  }, [authError]);
   
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -72,32 +79,14 @@ const Login = () => {
     
     if (!validateForm()) return;
     
-    setIsLoading(true);
     setErrorMessage('');
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock authentication logic
-      if (formData.email === 'graduate@example.com' && formData.password === 'password') {
-        // Successfully logged in as graduate
-        navigate('/graduate');
-      } else if (formData.email === 'employer@example.com' && formData.password === 'password') {
-        // Successfully logged in as employer
-        navigate('/employer');
-      } else if (formData.email === 'admin@example.com' && formData.password === 'password') {
-        // Successfully logged in as admin
-        navigate('/admin');
-      } else {
-        // Invalid credentials
-        setErrorMessage('Invalid email or password');
-      }
+      // Call the login function from the AuthContext
+      await login(formData.email, formData.password);
+      // Note: Navigation is handled in the AuthContext after successful login
     } catch (error) {
-      setErrorMessage('An error occurred during login. Please try again.');
       console.error('Login error:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -231,7 +220,7 @@ const Login = () => {
               type="submit" 
               className="w-full" 
               size="lg"
-              isLoading={isLoading}
+              isLoading={authLoading}
             >
               Sign In
             </Button>
@@ -248,9 +237,14 @@ const Login = () => {
         </Card>
         
         <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 mb-3">
             For demo purposes: Use graduate@example.com, employer@example.com, or admin@example.com with password "password"
           </p>
+          <Link to="/">
+            <Button variant="outline" size="sm" className="mx-auto">
+              <Home size={16} className="mr-2" /> Return to Home
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

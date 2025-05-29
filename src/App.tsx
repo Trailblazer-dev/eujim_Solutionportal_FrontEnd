@@ -1,8 +1,16 @@
-import { RouterProvider } from 'react-router-dom';
-import router from './routes/routes';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import routes from './routes/routes';
 
 function App() {
-  return <RouterProvider router={router} />;
+  // Create a router instance with our routes configuration
+  const router = createBrowserRouter(routes);
+  
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  );
 }
 
 export default App;

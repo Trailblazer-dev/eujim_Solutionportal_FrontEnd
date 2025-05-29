@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import Card from '../../components/common/Card';
 import Input from '../../components/common/Input';
 import Button from '../../components/common/Button';
+import useAuth from '../../hooks/useAuth';
+import { Home } from 'lucide-react';
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { register, registerEmployer, loading } = useAuth();
   const [step, setStep] = useState(1);
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState<'graduate' | 'employer'>('graduate');
@@ -78,11 +83,46 @@ const Register = () => {
   };
   const prevStep = () => setStep(step - 1);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateStep(3)) {
       setSubmissionStatus('success');
-      // Simulate API call or redirect here
+      
+      try {
+        const userData = {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          email: formData.email,
+          password: formData.password,
+          role: userType === 'graduate' ? 'jobseeker' : 'employer'
+        };
+
+        if (userType === 'graduate') {
+          // Register as graduate
+          await register(userData);
+        } else {
+          // Register as employer with additional company data
+          const employerData = {
+            ...userData,
+            company_name: formData.companyName,
+            company_description: formData.bio,
+            industry: formData.industryType
+          };
+          await registerEmployer(employerData);
+        }
+
+        // Navigate to login page with success message
+        navigate('/auth/login', { 
+          state: { 
+            registrationSuccess: true,
+            userType
+          }
+        });
+      } catch (error) {
+        console.error('Registration error:', error);
+        setSubmissionStatus('error');
+        setErrors({ submit: 'Registration failed. Please try again.' });
+      }
     }
   };
 
@@ -160,8 +200,11 @@ const Register = () => {
                 {errors.agreeToTerms && <p className="mt-1 text-sm text-red-500">{errors.agreeToTerms}</p>}
                 <div className="flex justify-between mt-6">
                   <Button type="button" variant="outline" onClick={prevStep}>Back</Button>
-                  <Button type="submit" isLoading={submissionStatus === 'success'}>{submissionStatus === 'success' ? 'Submitting...' : 'Register'}</Button>
+                  <Button type="submit" isLoading={loading || submissionStatus === 'success'}>Register</Button>
                 </div>
+                {errors.submit && (
+                  <div className="mt-4 text-center text-red-600 font-semibold">{errors.submit}</div>
+                )}
               </div>
             )}
             {submissionStatus === 'success' && (
@@ -169,6 +212,17 @@ const Register = () => {
             )}
           </form>
         </Card>
+        
+        <div className="mt-6 flex justify-between items-center">
+          <Link to="/auth/login" className="text-lightblue hover:underline text-sm">
+            Already have an account? Sign In
+          </Link>
+          <Link to="/">
+            <Button variant="outline" size="sm">
+              <Home size={16} className="mr-2" /> Return to Home
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
